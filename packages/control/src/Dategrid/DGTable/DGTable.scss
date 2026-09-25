@@ -1,0 +1,53 @@
+.ig-grid {
+    width: 100%;
+    height: 100%;
+    // color-scheme: light dark;
+
+    // @media (prefers-color-scheme: light) {
+    //     background-color: #fff;
+    //     color: #111;
+    // }
+
+    // @media (prefers-color-scheme: dark) {
+    //     background-color: hsl(0deg 0% 10%);
+    //     color: #fff;
+    // }
+
+    display: grid;
+    // grid-template-columns: auto 1fr;
+
+    .fill-grid {
+        block-size: 100%;
+    }
+}
+
+.ig-grid-filter {
+    grid-template-rows: auto 1fr;
+}
+
+.ig-grid-no-filter {
+    grid-template-rows: 1fr;
+}
+
+.editor-dropdown-style {
+    height: 35px;
+    line-height: 20px;
+}
+
+.ig-grid-loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+
+.rdg-header-row .rdg-cell:last-child {
+    width: 101% !important;
+}
+
+.rdg-row .rdg-cell:last-child {
+    width: 101% !important;
+}
+
+.rdg-row .action-cell-class:last-child {
+    width: 100.5% !important;
+}

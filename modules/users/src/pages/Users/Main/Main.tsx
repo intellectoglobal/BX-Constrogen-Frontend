@@ -1,0 +1,47 @@
+import React, { useState } from 'react';
+import { ListLayout, Datacolumn } from '@igblsln/control';
+import { PAGE_SIZE } from '@igblsln/store';
+import { useDeleteUserMutation, useListUserQuery } from '../usersApi';
+import { MODULE_NAME } from '../../../constants';
+import { PAGE_NAME, PAGE_ROUTE } from '../constants';
+
+type Props = {}
+
+const Main = (props: Props) => {
+  const [page, setPage] = useState(1)
+  const [size, setSize] = useState(PAGE_SIZE)
+  const { data, isFetching: isLoading } = useListUserQuery({ page: page, size: size }, { refetchOnMountOrArgChange: true })
+  const [deleteDataAction, { isLoading: isDeleting }] = useDeleteUserMutation()
+  const deleteAction = (id: number) => deleteDataAction(id).unwrap();
+  return (
+    <ListLayout
+      pagination={{
+        pageSize: size,
+        loading: isLoading,
+        currentPage: page,
+        total: data?.count,
+        onChange: (page, size) => {
+          setPage(page);
+          setSize(size)
+        }
+      }}
+      baseRoute={`/${MODULE_NAME}/${PAGE_ROUTE}`}
+      description={PAGE_NAME}
+      isLoading={isLoading || isDeleting}
+      data={data?.results}
+      deleteAction={deleteAction}
+      newTable
+      showHeader
+      navKey={'id'}
+      delKey={'id'}
+    >
+      <Datacolumn field="id" header="User Code" filteringType='number' />
+      <Datacolumn field="user_name" header="User Name" filteringType='text' />
+      <Datacolumn field="first_name" header="First Name" filteringType='text' />
+      <Datacolumn field="phone_number" header="Phone Number" filteringType='text' />
+      <Datacolumn field="email" header="Email" filteringType='text' />
+    </ListLayout>
+  );
+}
+
+export default Main

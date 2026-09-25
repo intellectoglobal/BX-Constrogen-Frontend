@@ -1,0 +1,28 @@
+
+
+.register-form .card {
+    width: 450px;
+}
+.register-form .card form {
+    margin-top: 2rem;
+}
+.register-form .card .field {
+    margin-bottom: 1.5rem;
+}
+.field .input-field{
+    display: flex;
+    flex-direction: column;
+    // width: inherit;
+}
+@media screen and (max-width: 960px) {
+    .register-form .card {
+        width: 80%;
+    }
+}
+@media screen and (max-width: 640px) {
+    .register-form .card {
+
+        width: 90%;
+        min-width: 0;
+    }
+}

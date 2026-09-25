@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+   web-dev:
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - "/app/node_modules"
+      - "./:/app"
+  web-prod:
+    container_name: ui-build-iq-prod
+    build: .
+    ports:
+      - '1337:80'

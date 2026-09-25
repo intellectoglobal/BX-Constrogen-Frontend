@@ -1,0 +1,41 @@
+.overlaypanel-filter {
+    .p-overlaypanel-content {
+        padding: 0.25rem;
+    }
+}
+
+.add-filter {
+    position: absolute;
+    font-size: 11px;
+    right: 5px;
+    bottom: 2.5px;
+}
+
+.saved-filter-control,
+.overlaypanel-filter {
+
+    .saved-filter-btn-icon {
+        position: absolute;
+        font-size: 13px;
+        left: 4px;
+        top: 6px;
+    }
+
+    .p-fieldset-legend {
+        padding: 5px;
+    }
+
+    .p-fieldset-content {
+        padding: 0;
+    }
+
+    .p-listbox-header {
+        padding: 0;
+        padding-top: 5px;
+    }
+
+    .filter-item {
+        display: flex;
+        align-items: center;
+    }
+}

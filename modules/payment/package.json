@@ -1,0 +1,50 @@
+{
+  "name": "@igblsln/payment",
+  "version": "0.1.0",
+  "description": "Payment module",
+  "author": "Build IQ <buildiq@gmail.com>",
+  "homepage": "https://github.com/igblsln/ui-build-iq#readme",
+  "license": "ISC",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "directories": {
+    "lib": "dist",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/igblsln/ui-build-iq.git"
+  },
+  "scripts": {
+    "build": "yarn clean && yarn build:copy",
+    "clean": "rimraf -rf ./dist",
+    "copy:scss": "copyfiles -u 1 \"src/**/*.scss\" dist",
+    "build:copy": "yarn build:lib && yarn copy:scss",
+    "build:lib": "tsc",
+    "watch": "nodemon",
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/igblsln/ui-build-iq/issues"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@igblsln/control": "^0.1.0",
+    "@igblsln/model": "^0.1.0",
+    "@igblsln/store": "^0.1.0"
+  }
+}

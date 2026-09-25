@@ -1,0 +1,41 @@
+{
+  "name": "build-iq-root",
+  "version": "1.0.0",
+  "description": "ERP Solution",
+  "repository": "git@github.com:igblsln/ui-build-iq.git",
+  "author": "Build IQ <buildiq@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "modules/*",
+    "shared/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "prebuild": "rm -rf ./packages/*/dist && rm -rf ./modules/*/dist",
+    "prestart": "yarn build:lib",
+    "start": "lerna exec --parallel --stream --scope build-iq-app -- yarn start",
+    "start:app": "lerna exec --parallel --stream --scope build-iq-app -- yarn start",
+    "start:mock": "lerna exec --parallel --stream --scope mock-server-app -- yarn start",
+    "build:app": "lerna exec --scope build-iq-app -- yarn build",
+    "build:lib": "lerna exec --stream --scope \"@igblsln/*\" -- yarn build",
+    "build": "yarn build:lib && yarn build:app",
+    "watch:lib": "lerna exec --parallel --stream --scope \"@igblsln/*\" -- yarn watch",
+    "watch": "concurrently \"yarn watch:lib\" \"yarn start:app\"",
+    "deploy": "gh-pages -d apps/build-iq-app/build",
+    "deploy:pr": "gh-pages -d apps/build-iq-app/build",
+    "addpr:index": ""
+  },
+  "devDependencies": {
+    "concurrently": "^7.3.0",
+    "copyfiles": "^2.4.1",
+    "gh-pages": "^4.0.0",
+    "lerna": "^5.1.8",
+    "nodemon": "^2.0.19",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {},
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+}

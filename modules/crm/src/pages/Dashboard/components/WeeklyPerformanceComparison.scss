@@ -1,0 +1,124 @@
+.weekly-performance-card {
+  border-radius: 12px;
+  border: 1px solid var(--surface-border);
+  background: linear-gradient(to bottom, #ffffff 0%, #fafafa 100%);
+  overflow: hidden;
+
+  .p-card-header {
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    background: #ffffff;
+    border-bottom: 1px solid var(--surface-border);
+  }
+
+  .p-card-title {
+    font-size: 1.25rem;
+    color: #1e293b;
+    margin: 0;
+    padding: 24px 0px 0px 25px;
+    line-height: 1.5;
+    font-weight: 700;
+  }
+
+  .p-card-subtitle {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    padding: 0px 25px;
+    line-height: 1.4;
+  }
+
+  .p-card-content {
+    padding: 1.5rem;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+  }
+}
+
+.weekly-performance-table {
+  width: 100%;
+  font-family: 'Roboto, sans-serif';
+  font-size: 0.875rem;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  .table-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid var(--surface-border);
+    padding: 0.75rem 0;
+    font-weight: 600;
+    color: #4b5563;
+  }
+
+  .table-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+  }
+
+  .table-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    align-items: center;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .table-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    background-color: #f8f9fa;
+    padding: 1rem 0;
+    font-weight: 600;
+    border-top: 1px solid var(--surface-border);
+    margin-top: 0.5rem;
+  }
+
+  .header-cell, .table-cell, .footer-cell {
+    padding: 0 1rem;
+    text-align: center;
+  }
+
+  .day-cell {
+    font-weight: 500;
+    color: #1e293b;
+  }
+
+  .muted-value {
+    color: #64748b;
+    font-weight: 400;
+  }
+
+  .primary-value {
+    color: #1e293b;
+    font-weight: 500;
+  }
+
+  .change-cell {
+    font-weight: 600;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .table-header, .table-row, .table-footer {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .day-cell {
+      grid-column: 1 / -1;
+      text-align: left;
+    }
+
+    .muted-value, .primary-value, .change-cell {
+      text-align: right;
+    }
+  }
+}

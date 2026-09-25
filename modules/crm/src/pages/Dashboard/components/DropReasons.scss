@@ -1,0 +1,103 @@
+.drop-reasons-card {
+  height: 100%;
+  min-height: 400px;
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid var(--surface-border);
+
+  .total-drops-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .total-drops-value {
+      background-color: #ff4d4f;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .badge-label {
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 500;
+    }
+  }
+
+  .drop-reasons-table {
+    margin-top: 2rem;
+    width: 100%;
+
+    .table-header {
+      display: flex;
+      padding: 0.5rem 0;
+      border-bottom: 2px solid #e5e5e5;
+      font-weight: 600;
+      color: #444;
+      font-size: 0.85rem;
+
+      .header-cell {
+        flex: 1;
+        padding: 0 0.5rem;
+
+        &.reason {
+          flex: 2;
+        }
+      }
+    }
+
+    .table-body {
+      .table-row {
+        display: flex;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0f0f0;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .cell {
+          flex: 1;
+          padding: 0 0.5rem;
+          display: flex;
+          align-items: center;
+
+          &.reason {
+            flex: 2;
+
+            .reason-icon {
+              margin-right: 0.5rem;
+              color: #666;
+              font-size: 0.9rem;
+            }
+
+            .reason-text {
+              font-size: 0.875rem;
+              color: #333;
+            }
+          }
+
+          .count-tag, .percentage-tag {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+          }
+        }
+      }
+
+      .summary-row {
+        background-color: #f8f9fa;
+        font-weight: 600;
+
+        .summary-cell {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}

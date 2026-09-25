@@ -1,0 +1,15 @@
+.p-datatable-igs {
+    .p-virtualscroller {
+        .p-virtualscroller-content {
+            min-height: calc(100% - 45px);
+        }
+    }
+}
+
+.custom.p-datatable-resizable>.p-datatable-wrapper {
+    overflow: inherit !important;
+    .p-virtualscroller {
+        overflow: inherit !important;
+    }
+
+}

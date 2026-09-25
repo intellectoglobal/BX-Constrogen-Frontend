@@ -1,0 +1,30 @@
+{
+  "name": "mock-server-app",
+  "version": "0.1.0",
+  "description": "Mock server app",
+  "author": "Build IQ <buildiq@gmail.com>",
+  "homepage": "https://github.com/igblsln/ui-build-iq#readme",
+  "license": "ISC",
+  "main": "dist/mock-server-app.js",
+  "module": "dist/mock-server-app.module.js",
+  "directories": {
+    "lib": "dist",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/igblsln/ui-build-iq.git"
+  },
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "bugs": {
+    "url": "https://github.com/igblsln/ui-build-iq/issues"
+  },
+  "devDependencies": {
+    "json-server": "^0.17.0"
+  }
+}

@@ -1,0 +1,31 @@
+.comming-soon-image {
+    width: 70%;
+    height: 70%;
+}
+
+
+
+.left-pane-expand-button {
+    position: absolute;
+    left: 15px;
+    top: 80px;
+    height: 2rem !important;
+    width: 2rem !important;
+
+    @media screen and (min-width: 576px) {
+        left: 30px;
+    }
+}
+
+.left-scroll-panel {
+    max-width: 25px;
+    height: 100%;
+
+    @media screen and (min-width: 576px) {
+        max-width: 40px;
+    }
+}
+
+.side-nav-static-height {
+    height: calc(100vh - 80px);
+}

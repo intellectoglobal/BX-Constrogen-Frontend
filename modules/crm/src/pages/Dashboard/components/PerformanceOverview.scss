@@ -1,0 +1,149 @@
+.performance-overview-section {
+  margin-bottom: 2rem;
+  background: var(--surface-ground);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+}
+
+.performance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.performance-title {
+  margin: 0;
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 1.5rem;
+}
+
+.performance-subtitle {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.top-kpi-summary {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.compact-kpi {
+  text-align: right;
+  min-width: 100px;
+}
+
+.compact-kpi-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.compact-kpi-label {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  color: #64748b;
+}
+
+.performance-grid {
+  margin-bottom: 1rem;
+}
+
+.performance-card .p-card {
+  border-radius: 12px;
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  transition: transform .2s ease, box-shadow .2s ease;
+  height: 100%;
+}
+
+.performance-card .p-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+}
+
+.performance-card .p-card-title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.performance-card .p-card-subtitle {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.performance-card-content {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.primary-kpi-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.secondary-kpi-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.performance-change {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.performance-subtitle {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+// Reuse existing color classes from main dashboard
+.text-green-500 {
+  color: #10b981;
+}
+
+.text-blue-500 {
+  color: #3b82f6;
+}
+
+.text-orange-500 {
+  color: #f97316;
+}
+
+.text-purple-500 {
+  color: #8b5cf6;
+}
+
+.text-indigo-500 {
+  color: #6366f1;
+}
+
+.text-red-500 {
+  color: #ef4444;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.muted-text {
+  color: #64748b;
+}
