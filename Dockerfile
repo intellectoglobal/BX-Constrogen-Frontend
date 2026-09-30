@@ -1,13 +1,25 @@
-# production environment
-FROM nginx:latest
+# Build the React application inside Docker
+FROM node:20-alpine AS builder
 
-# Set the environment variable here
-ARG REACT_APP_ENV
+WORKDIR /app
+
+COPY . .
+
+RUN yarn install --frozen-lockfile
+
+# Production environment MUST be set before React build
 ENV REACT_APP_ENV=prod
 
-COPY apps/build-iq-app/build /usr/share/nginx/html
+RUN yarn build
 
-# If you are using react-router, uncomment below line
+
+# Production environment
+FROM nginx:latest
+
+COPY --from=builder /app/apps/build-iq-app/build /usr/share/nginx/html
+
 COPY deploy/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
 EXPOSE 3000
+
 CMD ["nginx", "-g", "daemon off;"]
