@@ -5,7 +5,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --network-timeout 600000 --network-concurrency 4
 
 # Production environment MUST be set before React build
 ENV REACT_APP_ENV=prod
