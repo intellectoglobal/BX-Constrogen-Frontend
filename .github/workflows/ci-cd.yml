@@ -1,3 +1,4 @@
+
 name: Build IQ CI/CD
 
 on:
@@ -8,7 +9,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/bx-constrogen-frontend
+  IMAGE_NAME: intellectoglobal/bx-constrogen-frontend
 
 jobs:
   build:
@@ -16,69 +17,108 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Validate Docker Hub credentials
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          if [ -z "$DOCKERHUB_USERNAME" ]; then
+            echo "DOCKERHUB_USERNAME secret is missing"
+            exit 1
+          fi
 
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: ${{ env.IMAGE_NAME }}
+          if [ -z "$DOCKERHUB_TOKEN" ]; then
+            echo "DOCKERHUB_TOKEN secret is missing"
+            exit 1
+          fi
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
+          if [ "$DOCKERHUB_USERNAME" != "intellectoglobal" ]; then
+            echo "Docker Hub username does not match the expected account"
+            exit 1
+          fi
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+          echo "Docker Hub credentials are configured"
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v3
-      id: docker_build
-      with:
-        context: .
-        push: true
-        platforms: linux/amd64,linux/arm64,linux/arm/v8,linux/arm/v7
-        tags: |
-          ${{ env.IMAGE_NAME }}:${{ github.ref_name == 'main' && 'prod' || 'dev' }}
-        labels: ${{ steps.meta.outputs.labels }}
-        build-args: |
-          REACT_APP_ENV=${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        id: docker_build
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64,linux/arm/v8,linux/arm/v7
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            REACT_APP_ENV=${{ github.ref_name == 'main' && 'prod' || 'dev' }}
 
   deploy:
-      name: Deploy Docker Image to EC2
-      runs-on: ubuntu-latest
-      needs: build
+    name: Deploy Docker Image to EC2
+    runs-on: ubuntu-latest
+    needs: build
 
-      steps:
-        - name: Set up SSH for EC2
-          uses: webfactory/ssh-agent@v0.5.3
-          with:
-            ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+    steps:
+      - name: Set up SSH for EC2
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-        - name: Add EC2 host to known_hosts
-          run: |
-            ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+      - name: Add EC2 host to known_hosts
+        run: |
+          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
 
-        - name: Deploy Docker Image
-          run: |
-            ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
-              docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Deploy Docker Image
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          IMAGE_NAME: intellectoglobal/bx-constrogen-frontend
+          TAG: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+        run: |
+          PORT=$( [ "$TAG" = "prod" ] && echo "3000" || echo "3001" )
 
-              TAG=${{ github.ref_name == 'main' && 'prod' || 'dev' }}
-              PORT=\$( [ "\$TAG" = "prod" ] && echo "3000" || echo "3001" )
+          printf '%s' "$DOCKERHUB_TOKEN" | ssh "$EC2_USER@$EC2_HOST" \
+            "docker login -u '$DOCKERHUB_USERNAME' --password-stdin"
 
-              docker pull ${{ env.IMAGE_NAME }}:\$TAG
+          ssh "$EC2_USER@$EC2_HOST" << EOF
+            set -e
 
-              docker stop bx-frontend_\$TAG || true && docker rm bx-frontend_\$TAG || true
+            TAG=$TAG
+            PORT=$PORT
+            IMAGE=$IMAGE_NAME
 
-              docker run -d \
-                --name bx-frontend_\$TAG \
-                -p \$PORT:80 \
-                ${{ env.IMAGE_NAME }}:\$TAG
-            EOF
+            docker pull \$IMAGE:\$TAG
+
+            docker stop bx-frontend_\$TAG || true
+            docker rm bx-frontend_\$TAG || true
+
+            docker run -d \
+              --restart unless-stopped \
+              --name bx-frontend_\$TAG \
+              -p \$PORT:80 \
+              \$IMAGE:\$TAG
+
+            docker image prune -f
+          EOF
