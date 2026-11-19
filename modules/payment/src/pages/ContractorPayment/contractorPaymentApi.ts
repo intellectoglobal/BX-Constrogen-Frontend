@@ -83,11 +83,15 @@ export const contractorPaymentApi = api.injectEndpoints({
         { type: "CONTACTOR_PAYMENT", id: 'LIST' },
       ] : [{ type: "CONTACTOR_PAYMENT", id: 'LIST' }],
     }),
-    listContractorPaymentInvoice: build.query<ContractorInvoice, { page: number; size: number; year?: number; month?: number }>({
-      query: ({ page, size }) => {
-        return {
-          url: urlUtils(API_PATH, `all?page=${page}&page_size=${size || PAGE_SIZE}&pay_invoice=1`),
-        };
+    listContractorPaymentInvoice: build.query<ContractorInvoice, { page: number; size: number; year?: number; month?: number; contractor_name?: string; from_date?: string; to_date?: string }>({
+      query: ({ page, size, year, month, contractor_name, from_date, to_date }) => {
+        let url = urlUtils(API_PATH, `all?page=${page}&page_size=${size || PAGE_SIZE}&pay_invoice=1`);
+        if (year) url += `&year=${year}`;
+        if (month) url += `&month=${month}`;
+        if (contractor_name) url += `&contractor_name=${encodeURIComponent(contractor_name)}`;
+        if (from_date) url += `&from_date=${from_date}`;
+        if (to_date) url += `&to_date=${to_date}`;
+        return { url };
       },
       providesTags: (result) => result ? [
         ...result.results?.map(({ key }) => ({ type: "CONTACTOR_PAYMENT_INVOICE", key })),
@@ -95,10 +99,14 @@ export const contractorPaymentApi = api.injectEndpoints({
       ] : [{ type: "CONTACTOR_PAYMENT_INVOICE", id: 'LIST' }],
     }),
     listContractorPaymentVoucher: build.query<ListResponse<any>, any>({
-      query: ({ page, size, year, month }) => {
-        return {
-          url: urlUtils(API_PATH, `?page=${page || 1}&page_size=${size || PAGE_SIZE}&year=${year}&month=${month}`),
-        };
+      query: ({ page, size, year, month, contractor_name, from_date, to_date }) => {
+        let url = urlUtils(API_PATH, `?page=${page || 1}&page_size=${size || PAGE_SIZE}`);
+        if (year) url += `&year=${year}`;
+        if (month) url += `&month=${month}`;
+        if (contractor_name) url += `&contractor_name=${encodeURIComponent(contractor_name)}`;
+        if (from_date) url += `&from_date=${from_date}`;
+        if (to_date) url += `&to_date=${to_date}`;
+        return { url };
       },
       providesTags: (result) => result ? [
         ...result?.results?.map(({ key }) => ({ type: "CONTACTOR_PAYMENT_VOUCHER", key })),

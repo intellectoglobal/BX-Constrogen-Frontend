@@ -128,7 +128,7 @@ export default function ContractorPaymentModal({ displayModal, id, customDiscard
             <Datacolumn className='disabled' field="project_name" header="Project Name" type="text" />
             <Datacolumn className='disabled' field="invoice_amount" header="Invoice Amount" type="currency" />
             <Datacolumn className='disabled' field="paid_amount" header="Paid Amount" type="currency" />
-            <Datacolumn className='disabled' field="pending_amount" header="Pending Amount" type="currency" />
+            {/* <Datacolumn className='disabled' field="pending_amount" header="Pending Amount" type="currency" /> */}
           </ListLayout>
         </div>
       </div>

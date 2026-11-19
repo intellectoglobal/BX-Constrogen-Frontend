@@ -84,11 +84,14 @@ export const vendorPaymentApi = api.injectEndpoints({
         { type: "VENDOR_PAYMENT", id: 'LIST' },
       ] : [{ type: "VENDOR_PAYMENT", id: 'LIST' }],
     }),
-    listVendorPaymentInvoice: build.query<VendorInvoice, { page: number; size: number; year?: number; month?: number }>({
-      query: ({ page, size, year, month }) => {
+    listVendorPaymentInvoice: build.query<VendorInvoice, { page: number; size: number; year?: number; month?: number; vendor_name?: string; from_date?: string; to_date?: string }>({
+      query: ({ page, size, year, month, vendor_name, from_date, to_date }) => {
         let url = urlUtils(API_PATH, `all?page=${page}&page_size=${size || PAGE_SIZE}&pay_invoice=1`);
         if (year) url += `&year=${year}`;
         if (month) url += `&month=${month}`;
+        if (vendor_name) url += `&vendor_name=${encodeURIComponent(vendor_name)}`;
+        if (from_date) url += `&from_date=${from_date}`;
+        if (to_date) url += `&to_date=${to_date}`;
         return { url };
       },
       providesTags: (result) =>
@@ -100,10 +103,14 @@ export const vendorPaymentApi = api.injectEndpoints({
           : [{ type: 'VENDOR_PAYMENT_INVOICE' as const, id: 'LIST' }],
     }),
     listVendorPaymentVoucher: build.query<ListResponse<any>, any>({
-      query: ({ page, size, year, month }) => {
-        return {
-          url: urlUtils(API_PATH, `?page=${page || 1}&page_size=${size || PAGE_SIZE}&year=${year}&month=${month}`),
-        };
+      query: ({ page, size, year, month, vendor_name, from_date, to_date }) => {
+        let url = urlUtils(API_PATH, `?page=${page || 1}&page_size=${size || PAGE_SIZE}`);
+        if (year) url += `&year=${year}`;
+        if (month) url += `&month=${month}`;
+        if (vendor_name) url += `&vendor_name=${encodeURIComponent(vendor_name)}`;
+        if (from_date) url += `&from_date=${from_date}`;
+        if (to_date) url += `&to_date=${to_date}`;
+        return { url };
       },
       providesTags: (result) => result ? [
         ...result?.results?.map(({ key }) => ({ type: "VENDOR_PAYMENT_VOUCHER", key })),

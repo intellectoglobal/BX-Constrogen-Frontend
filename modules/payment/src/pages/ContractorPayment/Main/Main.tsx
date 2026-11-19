@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { ListLayout, Datacolumn } from '@igblsln/control';
 import { PAGE_SIZE, getPreviousYears, getMonthsFor, useActiveContractorsQuery, useAppDispatch, setPaymentMenu } from '@igblsln/store';
 import { Divider } from 'primereact/divider';
-import { Dropdown } from 'primereact/dropdown';;
+import { Dropdown } from 'primereact/dropdown';
+import { Calendar } from 'primereact/calendar';
 import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { confirmDialog } from 'primereact/confirmdialog';
@@ -22,14 +23,21 @@ const Main = (props: Props) => {
   
   const years = getPreviousYears(5)
   const [selectedYear, setSelectedYear] = useState<any>(years[0])
-  var months = getMonthsFor(selectedYear)
-  const [selectedMonth, setSelectedMonth] = useState<any>(null)
+  const months = getMonthsFor(selectedYear)
+  const [selectedMonth, setSelectedMonth] = useState<any>(() => {
+    const initialMonths = getMonthsFor(years[0])
+    return initialMonths[initialMonths.length - 1]?.value ?? null
+  })
+  const [invoiceName, setInvoiceName] = useState<string | undefined>()
+  const [voucherName, setVoucherName] = useState<string | undefined>()
+  const [invoiceFrom, setInvoiceFrom] = useState<Date | null>(null)
+  const [invoiceTo, setInvoiceTo] = useState<Date | null>(null)
+  const [voucherFrom, setVoucherFrom] = useState<Date | null>(null)
+  const [voucherTo, setVoucherTo] = useState<Date | null>(null)
+  const formatFilterDate = (date: Date | null) => date
+    ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+    : undefined
 
-  useEffect(() => {
-    months = getMonthsFor(selectedYear)
-    setSelectedMonth(months[months.length - 1].value)
-  }, [selectedYear])
-  
   const [page, setPage] = useState(1)
   const [size, setSize] = useState(PAGE_SIZE)
   const [activeTab, setActiveTab] = useState(0);
@@ -45,12 +53,15 @@ const Main = (props: Props) => {
   const { data: contractors } = useActiveContractorsQuery()
   // const { data: contractorPayments, isFetching: isLoading } = useListContractorPaymentQuery({ page: page, size: size, project: selectedProjectKey, paymentfrom: paymentFrom ? formatDate(paymentFrom) : null, paymentto: paymentTo ? formatDate(paymentTo) : null })
   const { data: contractorPayments, refetch: refetchPayContractors, isFetching: isLoading } = useListContractorPaymentQuery({ page: page, size: size })
-  const { data: contractorPaymentInvoice, refetch: refetchPayInvoices } = useListContractorPaymentInvoiceQuery({ page: page, size: size })
-  const { data: contractorPaymentVoucher, refetch: refetchVouchers } = useListContractorPaymentVoucherQuery({ 
-    page: page, size: size, year: selectedYear, month: selectedMonth 
-  },{
-    skip : !selectedYear || !selectedMonth,
-    refetchOnMountOrArgChange : true
+  const { data: contractorPaymentInvoice, refetch: refetchPayInvoices } = useListContractorPaymentInvoiceQuery({
+    page, size, contractor_name: invoiceName,
+    from_date: formatFilterDate(invoiceFrom), to_date: formatFilterDate(invoiceTo)
+  })
+  const { data: contractorPaymentVoucher, refetch: refetchVouchers } = useListContractorPaymentVoucherQuery({
+    page, size, year: selectedYear, month: selectedMonth, contractor_name: voucherName,
+    from_date: formatFilterDate(voucherFrom), to_date: formatFilterDate(voucherTo)
+  }, {
+    refetchOnMountOrArgChange: true
   })
   const [deleteDataAction, { isLoading: isDeleting }] = useDeleteContractorPaymentMutation()
   const deleteAction = (id: number) => {
@@ -240,6 +251,40 @@ const Main = (props: Props) => {
         </TabPanel>
 
         <TabPanel header="Pay Invoice">
+          <div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center', gap: 16, overflowX: 'auto', padding: '8px 0' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap' }}>
+              <span>Contractor Name</span>
+              <Dropdown style={{ width: 260 }} options={contractors || []} value={invoiceName}
+                optionLabel="name" optionValue="name" filter showClear placeholder="All contractors"
+                onChange={(e) => { setInvoiceName(e.value || undefined); setPage(1) }} />
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap' }}>
+              <span>From Date</span>
+              <span style={{ position: 'relative', width: 155 }}>
+                <Calendar style={{ width: '100%' }} inputStyle={{ paddingRight: 28 }}
+                  value={invoiceFrom ?? undefined} dateFormat="yy-mm-dd"
+                  onChange={(e) => { setInvoiceFrom((e.value as Date) || null); setPage(1) }} />
+                {invoiceFrom && <button type="button" className="p-link" aria-label="Clear invoice from date"
+                  style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}
+                  onClick={() => { setInvoiceFrom(null); setPage(1) }}>
+                  <i className="pi pi-times" aria-hidden="true" />
+                </button>}
+              </span>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap' }}>
+              <span>To Date</span>
+              <span style={{ position: 'relative', width: 155 }}>
+                <Calendar style={{ width: '100%' }} inputStyle={{ paddingRight: 28 }}
+                  value={invoiceTo ?? undefined} dateFormat="yy-mm-dd"
+                  onChange={(e) => { setInvoiceTo((e.value as Date) || null); setPage(1) }} />
+                {invoiceTo && <button type="button" className="p-link" aria-label="Clear invoice to date"
+                  style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}
+                  onClick={() => { setInvoiceTo(null); setPage(1) }}>
+                  <i className="pi pi-times" aria-hidden="true" />
+                </button>}
+              </span>
+            </label>
+          </div>
           <div className="col-12 " style={{ height: 'calc(100% - 383px)', minHeight: 200 }}>
             <ListLayout baseRoute={`/weeklypayment`} description={"Pending Payments"} isLoading={isLoading}
               data={contractorPaymentInvoice?.results}
@@ -316,43 +361,55 @@ const Main = (props: Props) => {
         </TabPanel>
 
         <TabPanel header="Contract Voucher">
-          <div className="flex">
-            {/* <div className="field col-6">
-              <label className={'col-4'}>From Date</label>
-              <Calendar
-                style={{ width: '60%' }}
-                showIcon
-              />
-            </div>
-            <div className="field col-6">
-              <label className={'col-4'}>To Date</label>
-              <Calendar
-                style={{ width: '60%' }}
-                showIcon
-              />
-            </div> */}
-            <div className="field col-6">
-              <label className={'col-4'}>Financial Year</label>
-              <Dropdown
-                style={{ width: '60%' }}
-                options={years}
-                onChange={(e) => setSelectedYear(e.value)}
-                value={selectedYear}
-                placeholder={'Select an Year'}
-              />
-            </div>
-            <div className="field col-6">
-              <label className={'col-4'}>Select Month</label>
-              <Dropdown
-                style={{ width: '60%' }}
-                value={selectedMonth}
-                placeholder='Select a Month'
-                options={months}
-                onChange={(e) => setSelectedMonth(e.value)}
-                optionLabel='name'
-                optionValue='value'
-              />
-            </div>
+          <div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center', gap: 16, overflowX: 'auto', padding: '8px 0' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap' }}>
+              <span>Financial Year</span>
+              <Dropdown style={{ width: 120 }} options={years} value={selectedYear} showClear
+                placeholder="Year" onChange={(e) => {
+                  setSelectedYear(e.value)
+                  const nextMonths = getMonthsFor(e.value)
+                  setSelectedMonth(nextMonths[nextMonths.length - 1]?.value ?? null)
+                  setPage(1)
+                }} />
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap' }}>
+              <span>Month</span>
+              <Dropdown style={{ width: 140 }} options={months} value={selectedMonth} showClear
+                optionLabel="name" optionValue="value" placeholder="Month"
+                onChange={(e) => { setSelectedMonth(e.value); setPage(1) }} />
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap' }}>
+              <span>Contractor Name</span>
+              <Dropdown style={{ width: 260 }} options={contractors || []} value={voucherName}
+                optionLabel="name" optionValue="name" filter showClear placeholder="All contractors"
+                onChange={(e) => { setVoucherName(e.value || undefined); setPage(1) }} />
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap' }}>
+              <span>From Date</span>
+              <span style={{ position: 'relative', width: 155 }}>
+                <Calendar style={{ width: '100%' }} inputStyle={{ paddingRight: 28 }}
+                  value={voucherFrom ?? undefined} dateFormat="yy-mm-dd"
+                  onChange={(e) => { setVoucherFrom((e.value as Date) || null); setPage(1) }} />
+                {voucherFrom && <button type="button" className="p-link" aria-label="Clear voucher from date"
+                  style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}
+                  onClick={() => { setVoucherFrom(null); setPage(1) }}>
+                  <i className="pi pi-times" aria-hidden="true" />
+                </button>}
+              </span>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap' }}>
+              <span>To Date</span>
+              <span style={{ position: 'relative', width: 155 }}>
+                <Calendar style={{ width: '100%' }} inputStyle={{ paddingRight: 28 }}
+                  value={voucherTo ?? undefined} dateFormat="yy-mm-dd"
+                  onChange={(e) => { setVoucherTo((e.value as Date) || null); setPage(1) }} />
+                {voucherTo && <button type="button" className="p-link" aria-label="Clear voucher to date"
+                  style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}
+                  onClick={() => { setVoucherTo(null); setPage(1) }}>
+                  <i className="pi pi-times" aria-hidden="true" />
+                </button>}
+              </span>
+            </label>
           </div>
 
           <div className="col-12 " style={{ height: 'calc(100% - 383px)', minHeight: 200 }}>
